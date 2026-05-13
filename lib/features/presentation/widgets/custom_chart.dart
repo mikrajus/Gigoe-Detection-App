@@ -31,48 +31,23 @@ class _CustomChartState extends State<CustomChart> {
   BarChartData mainBarData(Map<String, double> result) {
     return BarChartData(
       barTouchData: BarTouchData(
+        enabled: true,
+        handleBuiltInTouches: false,
         touchTooltipData: BarTouchTooltipData(
-          tooltipBgColor: Colors.black,
-          tooltipMargin: 1,
+          getTooltipColor: (group) => Colors.transparent,
+          tooltipPadding: EdgeInsets.zero,
+          tooltipMargin: 2,
           getTooltipItem: (group, groupIndex, rod, rodIndex) {
-            String namePlace;
-            final namePlaceInt = group.x.toInt();
-            if (namePlaceInt >= namePlaceList.length) {
-              throw Error();
-            }
-            namePlace = namePlaceList[namePlaceInt];
-
             return BarTooltipItem(
-              '$namePlace\n',
+              rod.toY.toInt().toString(),
               const TextStyle(
-                color: Colors.white,
+                color: AppColors.darkBlue,
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize: 14,
               ),
-              children: [
-                TextSpan(
-                  text: (rod.toY - 1).toString(),
-                  style: const TextStyle(
-                    color: Colors.amber,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
             );
           },
         ),
-        touchCallback: (FlTouchEvent event, barTouchResponse) {
-          setState(() {
-            if (!event.isInterestedForInteractions ||
-                barTouchResponse == null ||
-                barTouchResponse.spot == null) {
-              touchedIndex = -1;
-              return;
-            }
-            touchedIndex = barTouchResponse.spot!.touchedBarGroupIndex;
-          });
-        },
       ),
       titlesData: FlTitlesData(
         show: true,
@@ -118,7 +93,7 @@ class _CustomChartState extends State<CustomChart> {
     Widget text = Text(title, style: style);
 
     return SideTitleWidget(
-      axisSide: meta.axisSide,
+      meta: meta,
       space: 0,
       child: text,
     );
@@ -129,12 +104,11 @@ class _CustomChartState extends State<CustomChart> {
 
     return List.generate(values.length, (i) {
       final value = values[i] != null ? values[i]!.toStringAsFixed(0) : '0';
-      // final value = values[i] != null ? values[i]!.toStringAsFixed(0) : '0.0';
 
       return makeGroupData(
         i,
         double.parse(value),
-        isTouched: i == touchedIndex,
+        showTooltips: [0],
       );
     });
   }
@@ -142,7 +116,6 @@ class _CustomChartState extends State<CustomChart> {
   BarChartGroupData makeGroupData(
     int x,
     double y, {
-    bool isTouched = false,
     Color? barColor,
     double width = 24,
     List<int> showTooltips = const [],
@@ -152,12 +125,10 @@ class _CustomChartState extends State<CustomChart> {
       x: x,
       barRods: [
         BarChartRodData(
-          toY: isTouched ? y + 1 : y,
-          color: isTouched ? AppColors.darkBlue : barColor,
+          toY: y,
+          color: barColor,
           width: width,
-          borderSide: isTouched
-              ? const BorderSide(color: Colors.black, width: 2)
-              : const BorderSide(color: Colors.black, width: 2),
+          borderSide: const BorderSide(color: Colors.transparent, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
             toY: 30,

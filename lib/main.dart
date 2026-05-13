@@ -6,16 +6,28 @@ import 'features/presentation/bloc/data_chart_bloc.dart';
 import 'features/presentation/pages/welcome_page.dart';
 import 'features/presentation/pages/splash_page.dart';
 import 'features/presentation/pages/login_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'firebase_options.dart';
 import 'di.dart' as di;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp();
+    FirebaseFirestore.instance.settings = const Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+    );
+    FirebaseDatabase.instance.setPersistenceEnabled(true);
+  } catch (e) {
+    debugPrint("Firebase init error: $e");
+  }
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
@@ -25,6 +37,26 @@ void main() async {
 
   runApp(const MyApp());
 }
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+
+//   print('=== INITIALIZING FIREBASE ===');
+//   try {
+//     await Firebase.initializeApp();
+//     print('Firebase initialized successfully!');
+//     print('Firebase App Name: ${Firebase.app().name}');
+//     print('Firebase Options: ${Firebase.app().options}');
+//   } catch (e) {
+//     print('Firebase initialization ERROR: $e');
+//   }
+
+//   SystemChrome.setSystemUIOverlayStyle(
+//     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+//   );
+//   await di.setup();
+//   runApp(const MyApp());
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -45,7 +77,11 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(useMaterial3: true),
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
+        ),
+        // initialRoute: '/main', // <-- Tambahkan baris ini
         routes: {
           '/': (context) => const SplashPage(),
           '/welcome': (context) => const WelcomePage(),

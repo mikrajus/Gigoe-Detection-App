@@ -1,37 +1,27 @@
 {
   "project_info": {
-    "project_number": "606095153942",
-    "firebase_url": "https://gigoe-detection-app-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "gigoe-detection-app",
-    "storage_bucket": "gigoe-detection-app.appspot.com"
+    "project_number": "512294120879",
+    "firebase_url": "https://gigoe-detection-c2466-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "gigoe-detection-c2466",
+    "storage_bucket": "gigoe-detection-c2466.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:606095153942:android:41d5fadd267fe6218b8e37",
+        "mobilesdk_app_id": "1:512294120879:android:4024afe6df5d7a6886935a",
         "android_client_info": {
           "package_name": "com.example.gigoe_detection_app"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "606095153942-r9fe5pihtgus9snpa4vlb9niss02o20k.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBdnChZUh_6k8sPtMvxSDVWEkOHJaZXZDE"
+          "current_key": "AIzaSyBTZX-AstVHiepTUwMOMNEH7OCWkTDtypQ"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "606095153942-r9fe5pihtgus9snpa4vlb9niss02o20k.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

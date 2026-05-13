@@ -14,26 +14,44 @@ class DataChartBloc extends Bloc<DataChartEvent, DataChartState> {
 
       final result = await _getDataChartFromFirebase.execute();
 
-      final test = await getHasil(result);
-
-      result.fold(
-        (failure) => emit(DataChartError(failure.message)),
-        (_) => emit(DataChartHasData(test)),
+      // Membuka result (Either) menggunakan fold
+      // Ini memastikan kita hanya memproses data jika result-nya 'Right' (sukses)
+      await result.fold(
+        (failure) async {
+          emit(DataChartError(failure.message));
+        },
+        (dataList) async {
+          // dataList di sini adalah List murni dari Firebase/Repository
+          try {
+            final Map<String, double> hasilAkhir = await getHasil(dataList);
+            emit(DataChartHasData(hasilAkhir));
+          } catch (e) {
+            emit(DataChartError("Gagal mengolah data: ${e.toString()}"));
+          }
+        },
       );
     });
   }
 }
 
-Future<int> getTotalKerusakan(data) async {
-  return data['total_hilang'] + data['total_karies'] + data['total_tambal'];
+/// Fungsi untuk menghitung total kerusakan dari satu item data
+/// Menggunakan try-catch atau num.parse untuk keamanan tipe data
+Future<int> getTotalKerusakan(dynamic item) async {
+  try {
+    // Pastikan konversi ke int aman, terkadang Firebase mengembalikan double/int
+    final hilang = (item['total_hilang'] ?? 0).toInt();
+    final karies = (item['total_karies'] ?? 0).toInt();
+    final tambal = (item['total_tambal'] ?? 0).toInt();
+    
+    return hilang + karies + tambal;
+  } catch (e) {
+    return 0;
+  }
 }
 
-Future<List<Map<String, dynamic>>> filterDataByAlamat(data, alamat) async {
-  return data.where((item) => item.alamat == alamat).toList();
-}
-
-Future<Map<String, double>> getHasil(data) async {
-  const alamat = [
+/// Fungsi utama pengolahan data chart per kecamatan
+Future<Map<String, double>> getHasil(List<dynamic> data) async {
+  const listKecamatan = [
     'Baiturrahman',
     'Kuta Alam',
     'Meuraxa',
@@ -47,22 +65,32 @@ Future<Map<String, double>> getHasil(data) async {
 
   Map<String, double> hasil = {};
 
-  for (var i = 0; i < alamat.length; i++) {
-    final dataAlamat = data.getOrElse(() => []);
+  for (var kecamatan in listKecamatan) {
+    // 1. Filter data berdasarkan kecamatan yang sedang diiterasi
+    // Kita cek apakah 'item' adalah Map dan punya key 'kecamatan'
+    final filteredData = data.where((item) {
+      if (item is Map) {
+        return item['kecamatan'] == kecamatan;
+      }
+      return false;
+    }).toList();
 
-    final filteredDataAlamat =
-        dataAlamat.where((item) => item['kecamatan'] == alamat[i]).toList();
+    double totalKerusakanKecamatan = 0;
 
-    double totalKerusakan = 0;
-    for (var j = 0; j < filteredDataAlamat.length; j++) {
-      if (filteredDataAlamat[j]['total_hilang'] != null &&
-          filteredDataAlamat[j]['total_karies'] != null &&
-          filteredDataAlamat[j]['total_tambal'] != null) {
-        totalKerusakan += await getTotalKerusakan(filteredDataAlamat[j]);
+    // 2. Hitung total kerusakan dari data yang sudah difilter
+    for (var item in filteredData) {
+      // Validasi null check sebelum memproses
+      if (item['total_hilang'] != null || 
+          item['total_karies'] != null || 
+          item['total_tambal'] != null) {
+        
+        final int kerusakan = await getTotalKerusakan(item);
+        totalKerusakanKecamatan += kerusakan.toDouble();
       }
     }
 
-    hasil[alamat[i]] = totalKerusakan;
+    // 3. Masukkan ke dalam map hasil
+    hasil[kecamatan] = totalKerusakanKecamatan;
   }
 
   return hasil;

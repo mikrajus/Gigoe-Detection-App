@@ -63,7 +63,7 @@ class _SplashPageState extends State<SplashPage> {
               child: Container(
                 margin: const EdgeInsets.only(bottom: 50),
                 child: Text(
-                  'Versi 1.0.1',
+                  'Versi 2.0.0',
                   style: GoogleFonts.poppins(
                     color: AppColors.softWhite,
                     fontSize: 16,

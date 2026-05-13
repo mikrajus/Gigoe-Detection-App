@@ -3,6 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:get_it/get_it.dart';
 
 import 'features/data/datasources/remote_data_source.dart';
+import 'features/data/datasources/local_ml_data_source.dart';
+import 'features/data/datasources/predict_local_data_source_impl.dart';
 import 'features/data/datasources/remote_firebase_data_source.dart';
 import 'features/data/repositories/firebase_repository_impl.dart';
 import 'features/data/repositories/predict_repository_impl.dart';
@@ -80,8 +82,12 @@ Future<void> setup() async {
   );
 
   // DATA SOURCE INJECTION
+  locator.registerLazySingleton<LocalMLDataSource>(
+    () => LocalMLDataSource(),
+  );
+
   locator.registerLazySingleton<PredictRemoteDataSource>(
-    () => PredictRemoteDataSourceImpl(locator()),
+    () => PredictLocalDataSourceImpl(locator()),
   );
 
   locator.registerLazySingleton<RemoteFirebaseDataSource>(

@@ -16,6 +16,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loginUser = UserModel();
   late String _userName = '';
+  late String _userNpa = '';
   @override
   void initState() {
     super.initState();
@@ -32,6 +33,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
       if (userData.exists) {
         setState(() {
           _userName = userData.get('name') ?? '';
+          try {
+            _userNpa = userData.get('npa') ?? '';
+          } catch (e) {
+            _userNpa = ''; // Handle existing users without npa field
+          }
         });
       }
     }
@@ -100,38 +106,40 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     // ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'drg. $_userName',
                           style: GoogleFonts.poppins(
                             color: AppColors.softWhite,
-                            fontSize: 18,
+                            fontSize: 20,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 0),
+                        const SizedBox(height: 4),
                         Text(
-                          "NPA 0102.030806",
+                          _userNpa.isNotEmpty ? "NPA $_userNpa" : "NPA Belum Diatur",
                           style: GoogleFonts.poppins(
                             color: AppColors.softWhite,
-                            fontSize: 16,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(width: 0),
+                        const SizedBox(height: 8),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             const Icon(
                               Icons.email,
-                              size: 20,
+                              size: 16,
                               color: AppColors.softWhite,
                             ),
-                            const SizedBox(width: 5),
+                            const SizedBox(width: 6),
                             Text(
-                              "email_saya@gmail.com",
+                              user?.email ?? "Tidak ada email",
                               style: GoogleFonts.poppins(
                                 color: AppColors.softWhite,
-                                fontSize: 12,
+                                fontSize: 13,
                               ),
                             ),
                           ],

@@ -22,6 +22,58 @@ class _FetchDataResultsState extends State<FetchDataResults> {
     dbRef = FirebaseDatabase.instance.ref().child('data');
   }
 
+  void _showDeleteConfirmationDialog(String key) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        backgroundColor: AppColors.softWhite,
+        title: Text(
+          'Hapus Data Pasien?',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          'Apakah Anda yakin ingin menghapus data pasien ini secara permanen?',
+          style: GoogleFonts.poppins(fontSize: 14),
+          textAlign: TextAlign.center,
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Batal'),
+            child: Text(
+              'Batal',
+              style: GoogleFonts.poppins(color: Colors.grey, fontWeight: FontWeight.bold),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              FirebaseDatabase.instance.ref().child('data_pasien').child(key).remove();
+              Navigator.pop(context, 'Hapus');
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Riwayat pasien berhasil dihapus', style: GoogleFonts.poppins()),
+                  backgroundColor: Colors.red,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            child: Text(
+              'Hapus',
+              style: GoogleFonts.poppins(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget listItem({required Map results}) {
     return InkWell(
       child: Container(
@@ -87,6 +139,16 @@ class _FetchDataResultsState extends State<FetchDataResults> {
                     ),
                   ],
                 ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    if (results['key'] != null) {
+                      _showDeleteConfirmationDialog(results['key']);
+                    }
+                  },
+                ),
+                const SizedBox(width: 10),
               ],
             ),
           ),

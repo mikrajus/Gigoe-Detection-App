@@ -60,38 +60,38 @@ class _ResultDetectionPageState extends State<ResultDetectionPage> {
           .cast<String>();
     }
 
-    context.select<ClassificationBloc, void>((value) {
-      final state = value.state;
+    final classificationState = context.watch<ClassificationBloc>().state;
+    print("UI DEBUG - Classification State: \$classificationState");
 
-      if (state is CombinedClassificationState) {
-        setState(() {
-          // Front
-          frontCaries = filterData(state.frontData.predictions!, "Karies");
-          frontMissing = filterData(state.frontData.predictions!, "Hilang");
-          frontFilling = filterData(state.frontData.predictions!, "Tambal");
+    if (classificationState is CombinedClassificationState) {
+      print("UI DEBUG - Predictions Front: \${classificationState.frontData.predictions?.length}");
+      // Front
+      frontCaries = filterData(classificationState.frontData.predictions!, "Karies");
+      frontMissing = filterData(classificationState.frontData.predictions!, "Hilang");
+      frontFilling = filterData(classificationState.frontData.predictions!, "Tambal");
 
-          // Right
-          rightCaries = filterData(state.rightData.predictions!, "Karies");
-          rightMissing = filterData(state.rightData.predictions!, "Hilang");
-          rightFilling = filterData(state.rightData.predictions!, "Tambal");
+      // Right
+      rightCaries = filterData(classificationState.rightData.predictions!, "Karies");
+      rightMissing = filterData(classificationState.rightData.predictions!, "Hilang");
+      rightFilling = filterData(classificationState.rightData.predictions!, "Tambal");
 
-          // Left
-          leftCaries = filterData(state.leftData.predictions!, "Karies");
-          leftMissing = filterData(state.leftData.predictions!, "Hilang");
-          leftFilling = filterData(state.leftData.predictions!, "Tambal");
+      // Left
+      leftCaries = filterData(classificationState.leftData.predictions!, "Karies");
+      leftMissing = filterData(classificationState.leftData.predictions!, "Hilang");
+      leftFilling = filterData(classificationState.leftData.predictions!, "Tambal");
 
-          // Upper
-          upperCaries = filterData(state.upperData.predictions!, "Karies");
-          upperMissing = filterData(state.upperData.predictions!, "Hilang");
-          upperFilling = filterData(state.upperData.predictions!, "Tambal");
+      // Upper
+      upperCaries = filterData(classificationState.upperData.predictions!, "Karies");
+      upperMissing = filterData(classificationState.upperData.predictions!, "Hilang");
+      upperFilling = filterData(classificationState.upperData.predictions!, "Tambal");
 
-          // Lower
-          lowerCaries = filterData(state.lowerData.predictions!, "Karies");
-          lowerMissing = filterData(state.lowerData.predictions!, "Hilang");
-          lowerFilling = filterData(state.lowerData.predictions!, "Tambal");
-        });
-      }
-    });
+      // Lower
+      lowerCaries = filterData(classificationState.lowerData.predictions!, "Karies");
+      lowerMissing = filterData(classificationState.lowerData.predictions!, "Hilang");
+      lowerFilling = filterData(classificationState.lowerData.predictions!, "Tambal");
+
+      print("UI DEBUG - Front Fillings Count: \${frontFilling.length}");
+    }
 
     int totalCaries = frontCaries.length +
         rightCaries.length +

@@ -10,34 +10,43 @@ environment:
   sdk: ">=3.0.3 <4.0.0"
 
 dependencies:
-  carousel_slider: ^4.2.1
-  cloud_firestore: ^4.9.0
-  connectivity_plus: ^4.0.2
+  win32: ^5.5.0
+  carousel_slider: ^5.1.1
+  #cloud_firestore: ^4.9.0
+  cloud_firestore: ^6.3.0
+  connectivity_plus: ^7.1.1
   cupertino_icons: ^1.0.2
   dartz: ^0.10.1
   date_time_picker: ^2.1.0
   dio: ^5.1.2
   equatable: ^2.0.5
-  esys_flutter_share_plus: ^2.2.0
-  firebase_auth: ^4.8.0
-  firebase_core: ^2.15.1
-  firebase_database: ^10.2.5
-  firebase_storage: ^11.2.6
-  fl_chart: ^0.63.0
+  #esys_flutter_share_plus: ^2.2.0
+  share_plus: ^12.0.2
+  #firebase_auth: ^4.8.0
+  firebase_auth: ^6.4.0
+  # firebase_core: ^2.15.1
+  firebase_core: ^4.7.0
+  #firebase_database: ^10.2.5
+  firebase_database: ^12.3.0
+  #firebase_storage: ^11.2.6
+  firebase_storage: ^13.3.0
+  fl_chart: ^1.2.0
   flutter:
     sdk: flutter
-  flutter_bloc: ^8.1.2
-  flutter_holo_date_picker: ^1.1.3
+  flutter_bloc: ^9.1.1
   get: ^4.6.5
-  get_it: ^7.3.0
-  google_fonts: ^5.1.0
+  get_it: ^9.2.1
+  google_fonts: ^8.0.2
   image_picker: ^1.0.4
   path_provider: ^2.1.0
   provider: ^6.0.5
   qr_flutter: ^4.1.0
+  tflite_flutter: ^0.12.1
+  image: ^4.8.0
+
 
 dev_dependencies:
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
 
@@ -71,6 +80,7 @@ flutter:
     - assets/images/doctor_register.png
     - assets/images/doctor_login.png
     - assets/images/statistik.png
+    - assets/models/
   # An image asset can refer toeeee en one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
   # For details regarding adding assets from package dependencies, see

@@ -442,7 +442,7 @@ class _AddPatientState extends State<AddPatient> {
           SizedBox(
             height: 50,
             child: DropdownButtonFormField<String>(
-              value: _selectedGender.isNotEmpty ? _selectedGender : null,
+              initialValue: _selectedGender.isNotEmpty ? _selectedGender : null,
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedGender = newValue!;
@@ -501,7 +501,7 @@ class _AddPatientState extends State<AddPatient> {
           SizedBox(
             height: 50,
             child: DropdownButtonFormField<String>(
-              value: _selectedDistrict.isNotEmpty ? _selectedDistrict : null,
+              initialValue: _selectedDistrict.isNotEmpty ? _selectedDistrict : null,
               onChanged: (newValue) {
                 setState(() {
                   _selectedDistrict = newValue!;
@@ -561,7 +561,7 @@ class _AddPatientState extends State<AddPatient> {
           SizedBox(
             height: 50,
             child: DropdownButtonFormField<String>(
-              value: _selectedVillage.isNotEmpty ? _selectedVillage : null,
+              initialValue: _selectedVillage.isNotEmpty ? _selectedVillage : null,
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedVillage = newValue!;
@@ -623,7 +623,7 @@ class _AddPatientState extends State<AddPatient> {
           SizedBox(
             height: 50,
             child: DropdownButtonFormField<String>(
-              value:
+              initialValue:
                   _selectedProfession.isNotEmpty ? _selectedProfession : null,
               onChanged: (String? newValue) {
                 setState(() {

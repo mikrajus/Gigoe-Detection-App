@@ -16,6 +16,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController nama = TextEditingController();
+  final TextEditingController npa = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   bool _obscureText = true;
@@ -88,6 +89,28 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: nama,
                       decoration: InputDecoration(
                         hintText: 'Nama Lengkap',
+                        hintStyle: GoogleFonts.poppins(
+                            color: const Color(0xffC3C3C3),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
+                        border: InputBorder.none,
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(20, 10, 0, 10),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height: 50,
+                    width: 300,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                    ),
+                    child: TextFormField(
+                      controller: npa,
+                      decoration: InputDecoration(
+                        hintText: 'Nomor Pokok Anggota (NPA)',
                         hintStyle: GoogleFonts.poppins(
                             color: const Color(0xffC3C3C3),
                             fontSize: 16,
@@ -214,35 +237,62 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   onSubmit() async {
+    // 1. Validasi manual agar pengguna tidak mengirim form kosong
+    if (email.text.trim().isEmpty || 
+        password.text.trim().isEmpty || 
+        npa.text.trim().isEmpty || 
+        nama.text.trim().isEmpty) {
+      warning("Semua kolom (Nama, NPA, Email, dan Kata Sandi) harus diisi!");
+      return;
+    }
+
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email.text.trim(),
         password: password.text.trim(),
       );
-      // Get the user's unique ID
+      
+      // Mengambil ID pengguna
       String userId = userCredential.user!.uid;
-      // Create a document reference for the user
+      
+      // Membuat document reference untuk pengguna di Firestore
       DocumentReference userDocRef =
           FirebaseFirestore.instance.collection('users').doc(userId);
       await userDocRef.set(
         {
           'name': nama.text.trim(),
+          'npa': npa.text.trim(),
           'email': email.text.trim(),
         },
       );
-      // ignore: use_build_context_synchronously
+      
+      // Menggantikan ignore: use_build_context_synchronously dengan mounted check
+      if (!mounted) return; 
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (BuildContext context) => const LoginPage(),
         ),
       );
+    } on FirebaseAuthException catch (e) {
+      // 2. Menangkap error Firebase Auth secara spesifik
+      if (e.code == 'weak-password') {
+        warning('Kata sandi terlalu lemah (minimal 6 karakter).');
+      } else if (e.code == 'email-already-in-use') {
+        warning('Email ini sudah terdaftar.');
+      } else if (e.code == 'invalid-email') {
+        warning('Format email tidak valid.');
+      } else {
+        warning('Gagal mendaftar: ${e.message}');
+      }
     } catch (e) {
-      warning();
+      // 3. Menangkap error Firestore atau sistem lainnya
+      warning('Terjadi kesalahan: $e');
     }
   }
 
-  warning() {
+  // Fungsi warning sekarang menerima parameter pesan error
+  warning(String message) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -263,7 +313,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Data tidak boleh kosong atau data sudah terdaftar!',
+                message, // Pesan akan berubah sesuai error yang terjadi
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                     color: const Color.fromARGB(255, 0, 0, 0),

@@ -1,0 +1,3 @@
+0: Hilang
+1: Karies
+2: Tambal

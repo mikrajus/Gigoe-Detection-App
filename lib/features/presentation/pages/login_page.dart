@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
               width: double.maxFinite,
               height: MediaQuery.of(context).size.height * 0.60,
               decoration: const ShapeDecoration(
-                color: Color(0xFF4E73AF),
+                color: AppColors.primaryBlue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
@@ -236,7 +236,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(
                         'Lanjutkan',
                         style: GoogleFonts.poppins(
-                            color: const Color(0xFF4E73AF),
+                            color: AppColors.primaryBlue,
                             fontSize: 12,
                             fontWeight: FontWeight.w400),
                       ),
