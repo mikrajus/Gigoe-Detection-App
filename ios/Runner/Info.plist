@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Aplikasi ini membutuhkan akses kamera untuk mengambil foto gigi Anda untuk keperluan deteksi.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Aplikasi ini membutuhkan akses galeri untuk memilih foto gigi yang sudah ada.</string>
 </dict>
 </plist>

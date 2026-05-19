@@ -51,15 +51,11 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            SizedBox(
+            Image.asset(
+              'assets/images/doctor_login.png',
+              height: 450,
               width: double.infinity,
-              height: size.height - 450,
-              child: Image.asset(
-                'assets/images/doctor_login.png',
-                height: 350,
-                width: 360,
-                fit: BoxFit.cover,
-              ),
+              fit: BoxFit.contain,
             ),
             Container(
               width: double.maxFinite,

@@ -3,6 +3,7 @@ import 'package:gigoe_detection_app/core/utils/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
+import '../features/presentation/pages/edit_patient_page.dart';
 
 class FetchDataResults extends StatefulWidget {
   const FetchDataResults({Key? key}) : super(key: key);
@@ -140,6 +141,17 @@ class _FetchDataResultsState extends State<FetchDataResults> {
                   ],
                 ),
                 const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.edit, color: AppColors.primaryBlue),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditPatientPage(patientData: results),
+                      ),
+                    );
+                  },
+                ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
