@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:gigoe_detection_app/core/utils/app_colors.dart';
 import 'package:gigoe_detection_app/features/presentation/widgets/user_model.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'faq_page.dart';
+import 'about_page.dart';
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({Key? key}) : super(key: key);
@@ -162,32 +164,46 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ),
             Container(
               width: 300,
-              height: 100,
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 color: AppColors.primaryBlue,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(width: 20),
-                      const Icon(
-                        Icons.chat_rounded,
-                        size: 20,
-                        color: AppColors.softWhite,
-                      ),
-                      const SizedBox(width: 20),
-                      Text(
-                        "FAQ",
-                        style: GoogleFonts.poppins(
-                          color: AppColors.softWhite,
-                          fontSize: 14,
+                  InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FaqPage(),
                         ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const SizedBox(width: 20),
+                          const Icon(
+                            Icons.chat_rounded,
+                            size: 20,
+                            color: AppColors.softWhite,
+                          ),
+                          const SizedBox(width: 20),
+                          Text(
+                            "FAQ",
+                            style: GoogleFonts.poppins(
+                              color: AppColors.softWhite,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                   const Divider(
                     color: AppColors.softBlue,
@@ -196,24 +212,38 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     indent: 20,
                     endIndent: 20,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(width: 20),
-                      const Icon(
-                        Icons.menu_book_rounded,
-                        size: 20,
-                        color: AppColors.softWhite,
-                      ),
-                      const SizedBox(width: 20),
-                      Text(
-                        "Tentang Kami",
-                        style: GoogleFonts.poppins(
-                          color: AppColors.softWhite,
-                          fontSize: 14,
+                  InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AboutPage(),
                         ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const SizedBox(width: 20),
+                          const Icon(
+                            Icons.menu_book_rounded,
+                            size: 20,
+                            color: AppColors.softWhite,
+                          ),
+                          const SizedBox(width: 20),
+                          Text(
+                            "Tentang Kami",
+                            style: GoogleFonts.poppins(
+                              color: AppColors.softWhite,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   )
                 ],
               ),
@@ -230,13 +260,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ),
             Container(
               width: 300,
-              height: 100,
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 color: AppColors.primaryBlue,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -264,104 +294,115 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     indent: 20,
                     endIndent: 20,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(width: 20),
-                      const Icon(
-                        Icons.logout_rounded,
-                        size: 20,
-                        color: AppColors.softWhite,
-                      ),
-                      const SizedBox(width: 20),
-                      InkWell(
-                        child: SizedBox(
-                          width: 200,
-                          child: Text(
+                  InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            backgroundColor: Colors.white,
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.warning,
+                                        color: Colors.red[900],
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text("Konfirmasi!",
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.red[900],
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                    "Anda yakin ingin keluar dari akun?",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                      child: Text(
+                                        "Batal",
+                                        style: GoogleFonts.poppins(
+                                          color: AppColors.primaryBlue,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        debugPrint("[UserPage] Logging out... currentUser before signout: ${FirebaseAuth.instance.currentUser?.uid}");
+                                        try {
+                                          await FirebaseAuth.instance.signOut();
+                                          debugPrint("[UserPage] Logged out successfully. currentUser after signout: ${FirebaseAuth.instance.currentUser?.uid}");
+                                        } catch (e) {
+                                          debugPrint("[UserPage] Error signing out: $e");
+                                        }
+                                        if (context.mounted) {
+                                          Navigator.pushNamedAndRemoveUntil(
+                                              context,
+                                              '/login_page',
+                                              (route) => false);
+                                        }
+                                      },
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Colors.red[900],
+                                        textStyle: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      child: const Text('Ya'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const SizedBox(width: 20),
+                          const Icon(
+                            Icons.logout_rounded,
+                            size: 20,
+                            color: AppColors.softWhite,
+                          ),
+                          const SizedBox(width: 20),
+                          Text(
                             "Keluar Akun",
                             style: GoogleFonts.poppins(
                               color: AppColors.softWhite,
                               fontSize: 14,
                             ),
                           ),
-                        ),
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                backgroundColor: Colors.white,
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.warning,
-                                            color: Colors.red[900],
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Text("Konfirmasi!",
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.red[900],
-                                              )),
-                                        ],
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        "Anda yakin ingin keluar dari akun?",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        TextButton(
-                                          child: Text(
-                                            "Batal",
-                                            style: GoogleFonts.poppins(
-                                              color: AppColors.primaryBlue,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pushNamedAndRemoveUntil(
-                                                context,
-                                                '/welcome',
-                                                (route) => false);
-                                          },
-                                          style: TextButton.styleFrom(
-                                            foregroundColor: Colors.red[900],
-                                            textStyle: GoogleFonts.poppins(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                          child: const Text('Ya'),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
+                        ],
                       ),
-                    ],
-                  )
+                    ),
+                  ),
                 ],
               ),
             ),

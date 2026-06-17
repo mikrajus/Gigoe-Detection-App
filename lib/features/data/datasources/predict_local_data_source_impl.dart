@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:typed_data';
-import 'package:image/image.dart' as img;
 
 import '../../../core/error/exceptions.dart';
 import '../models/caries_model.dart';

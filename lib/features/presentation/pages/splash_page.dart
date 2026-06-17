@@ -17,11 +17,13 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     Timer(const Duration(seconds: 5), () {
-      User? user = FirebaseAuth.instance.currentUser;
+      if (!mounted) return;
 
+      User? user = FirebaseAuth.instance.currentUser;
+      debugPrint("[SplashPage] Checking auth session on start: user is ${user != null ? 'LOGGED IN (uid: ${user.uid})' : 'NOT LOGGED IN'}");
       if (user == null) {
         Navigator.pushNamedAndRemoveUntil(
-            context, '/welcome', (route) => false);
+            context, '/login_page', (route) => false);
       } else {
         Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
       }

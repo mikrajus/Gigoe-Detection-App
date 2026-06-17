@@ -15,7 +15,7 @@ class CustomChart extends StatefulWidget {
 class _CustomChartState extends State<CustomChart> {
   int touchedIndex = -1;
 
-  final Duration animDuration = const Duration(milliseconds: 250);
+  final Duration duration = const Duration(milliseconds: 150);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class _CustomChartState extends State<CustomChart> {
       aspectRatio: 1.9,
       child: BarChart(
         mainBarData(widget.result),
-        swapAnimationDuration: animDuration,
+        duration: duration,
       ),
     );
   }

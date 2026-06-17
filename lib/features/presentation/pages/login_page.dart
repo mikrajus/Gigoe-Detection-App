@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/utils/app_colors.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
@@ -33,40 +34,85 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: AppColors.softBlue,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.primaryBlue),
-        ),
+        automaticallyImplyLeading: false,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Image.asset(
-              'assets/images/doctor_login.png',
-              height: 450,
-              width: double.infinity,
-              fit: BoxFit.contain,
-            ),
+      body: Stack(
+        children: [
+          // Background decorations (Modern detail)
+          Positioned(
+            top: -50,
+            left: -50,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primaryBlue.withOpacity(0.15),
+              ),
+            ).animate().scale(duration: 1.seconds, curve: Curves.easeOut),
+          ),
+          Positioned(
+            top: 200,
+            right: -100,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.2),
+              ),
+            ).animate().scale(duration: 1200.ms, curve: Curves.easeOut),
+          ),
+          // Main content
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const SizedBox(height: 60),
+                Image.asset(
+                  'assets/images/logo.png',
+                  height: 35,
+                ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.5, end: 0),
+                const SizedBox(height: 10),
+                Text(
+                  ' Selamat Datang Kembali! ',
+                  style: GoogleFonts.poppins(
+                    color: AppColors.darkBlue,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ).animate().fadeIn(delay: 200.ms).slideY(begin: -0.5, end: 0),
+                Text(
+                  ' Solusi Cerdas Deteksi Gigi Anda ',
+                  style: GoogleFonts.poppins(
+                    color: AppColors.darkBlue.withOpacity(0.7),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ).animate().fadeIn(delay: 300.ms).slideY(begin: -0.5, end: 0),
+                const SizedBox(height: 10),
+                Transform.scale(
+                  scale: 1.15,
+                  child: Image.asset(
+                    'assets/images/doctor_login.png',
+                    height: 380,
+                    fit: BoxFit.contain,
+                  ),
+                ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1, end: 0),
             Container(
               width: double.maxFinite,
               height: MediaQuery.of(context).size.height * 0.60,
-              decoration: const ShapeDecoration(
-                color: AppColors.primaryBlue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
+              decoration: BoxDecoration(
+                gradient: AppColors.primaryGradient,
+                boxShadow: AppColors.subtleShadow,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
                 ),
               ),
               child: Column(
@@ -170,6 +216,7 @@ class _LoginPageState extends State<LoginPage> {
                           setState(() {
                             errorMessage = e.toString();
                           });
+                          if (!mounted) return;
                           showDialog(
                             context: context,
                             builder: (context) => Dialog(
@@ -200,11 +247,11 @@ class _LoginPageState extends State<LoginPage> {
                                           fontWeight: FontWeight.w400),
                                     ),
                                     const SizedBox(height: 20),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      style: ElevatedButton.styleFrom(
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        style: ElevatedButton.styleFrom(
                                           backgroundColor:
                                               AppColors.primaryBlue),
                                       child: Text(
@@ -270,9 +317,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-            ),
+            ).animate().slideY(begin: 0.2, end: 0, duration: 600.ms, curve: Curves.easeOut).fadeIn(duration: 600.ms),
           ],
         ),
+      ),
+        ],
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,15 +13,19 @@ import '../widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 
 class ResultDetectionPage extends StatefulWidget {
-  const ResultDetectionPage({super.key, required this.name});
+  const ResultDetectionPage({super.key, required this.name, required this.imagePaths});
 
   final String name;
+  final Map<String, String> imagePaths;
 
   @override
   State<ResultDetectionPage> createState() => _ResultDetectionPageState();
 }
 
 class _ResultDetectionPageState extends State<ResultDetectionPage> {
+  int _current = 0;
+  final CarouselSliderController _controller = CarouselSliderController();
+
   // Front
   List<String> frontCaries = [];
   List<String> frontMissing = [];
@@ -61,10 +67,8 @@ class _ResultDetectionPageState extends State<ResultDetectionPage> {
     }
 
     final classificationState = context.watch<ClassificationBloc>().state;
-    print("UI DEBUG - Classification State: \$classificationState");
 
     if (classificationState is CombinedClassificationState) {
-      print("UI DEBUG - Predictions Front: \${classificationState.frontData.predictions?.length}");
       // Front
       frontCaries = filterData(classificationState.frontData.predictions!, "Karies");
       frontMissing = filterData(classificationState.frontData.predictions!, "Hilang");
@@ -89,8 +93,6 @@ class _ResultDetectionPageState extends State<ResultDetectionPage> {
       lowerCaries = filterData(classificationState.lowerData.predictions!, "Karies");
       lowerMissing = filterData(classificationState.lowerData.predictions!, "Hilang");
       lowerFilling = filterData(classificationState.lowerData.predictions!, "Tambal");
-
-      print("UI DEBUG - Front Fillings Count: \${frontFilling.length}");
     }
 
     int totalCaries = frontCaries.length +
@@ -142,6 +144,7 @@ class _ResultDetectionPageState extends State<ResultDetectionPage> {
           Padding(
             padding: const EdgeInsets.only(top: 20),
             child: CarouselSlider(
+              carouselController: _controller,
               items: [
                 BlocBuilder<ImgResponseBloc, ImgResponseState>(
                   builder: (context, state) {
@@ -227,10 +230,34 @@ class _ResultDetectionPageState extends State<ResultDetectionPage> {
                 autoPlayInterval: const Duration(seconds: 5),
                 enlargeCenterPage: true,
                 enableInfiniteScroll: true,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    _current = index;
+                  });
+                },
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [0, 1, 2, 3, 4].asMap().entries.map((entry) {
+              return GestureDetector(
+                onTap: () => _controller.animateToPage(entry.key),
+                child: Container(
+                  width: 10.0,
+                  height: 10.0,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _current == entry.key
+                        ? AppColors.primaryBlue
+                        : Colors.black.withValues(alpha: 0.2),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 38),
             child: ResultoverallConditionCard(
@@ -253,11 +280,23 @@ class _ResultDetectionPageState extends State<ResultDetectionPage> {
                 ),
               ),
               onPressed: () async {
+                final imgState = context.read<ImgResponseBloc>().state;
+                Map<String, String> localImagePaths = {};
+                
+                if (imgState is CombinedImgResponseState) {
+                  localImagePaths = await _saveAnnotatedImagesLocally(imgState);
+                } else {
+                  // Fallback if state is not available (shouldn't happen)
+                  localImagePaths = await _saveImagesLocally();
+                }
+
                 await updateData(
                   totalCaries: totalCaries,
                   totalMissing: totalMissing,
                   totalFilling: totalFilling,
+                  imagePaths: localImagePaths,
                 );
+                
                 // ignore: use_build_context_synchronously
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
@@ -281,16 +320,77 @@ class _ResultDetectionPageState extends State<ResultDetectionPage> {
     );
   }
 
+  Future<Map<String, String>> _saveAnnotatedImagesLocally(CombinedImgResponseState state) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final Map<String, String> savedPaths = {};
+
+    for (var entry in widget.imagePaths.entries) {
+      final type = entry.key;
+      final originalPath = entry.value;
+
+      if (originalPath.isNotEmpty) {
+        Uint8List? annotatedBytes;
+        switch(type) {
+          case 'front': annotatedBytes = state.frontImgUint8List; break;
+          case 'right': annotatedBytes = state.rightImgUint8List; break;
+          case 'left': annotatedBytes = state.leftImgUint8List; break;
+          case 'upper': annotatedBytes = state.upperImgUint8List; break;
+          case 'lower': annotatedBytes = state.lowerImgUint8List; break;
+        }
+
+        if (annotatedBytes != null && annotatedBytes.isNotEmpty) {
+          final fileName = '${DateTime.now().millisecondsSinceEpoch}_$type.jpg';
+          final newFile = File('${appDir.path}/$fileName');
+          await newFile.writeAsBytes(annotatedBytes);
+          savedPaths[type] = newFile.path;
+        } else {
+          // Fallback ke gambar asli jika proses anotasi gagal
+          final file = File(originalPath);
+          if (await file.exists()) {
+            final fileName = '${DateTime.now().millisecondsSinceEpoch}_$type.jpg';
+            final savedImage = await file.copy('${appDir.path}/$fileName');
+            savedPaths[type] = savedImage.path;
+          }
+        }
+      }
+    }
+    
+    return savedPaths;
+  }
+
+  Future<Map<String, String>> _saveImagesLocally() async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final Map<String, String> savedPaths = {};
+
+    for (var entry in widget.imagePaths.entries) {
+      final type = entry.key;
+      final originalPath = entry.value;
+
+      if (originalPath.isNotEmpty) {
+        final file = File(originalPath);
+        if (await file.exists()) {
+          final fileName = '${DateTime.now().millisecondsSinceEpoch}_$type.jpg';
+          final savedImage = await file.copy('${appDir.path}/$fileName');
+          savedPaths[type] = savedImage.path;
+        }
+      }
+    }
+    
+    return savedPaths;
+  }
+
   updateData({
     required totalCaries,
     required totalMissing,
     required totalFilling,
+    required Map<String, String> imagePaths,
   }) {
     DatabaseReference ref = FirebaseDatabase.instance.ref();
     ref.child('data_pasien').child(widget.name).update({
       'total_karies': totalCaries,
       'total_hilang': totalMissing,
-      'total_tambal': totalFilling
+      'total_tambal': totalFilling,
+      'images': imagePaths,
     });
   }
 }

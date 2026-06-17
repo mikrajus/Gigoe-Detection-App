@@ -2,7 +2,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/utils/app_colors.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -18,9 +17,9 @@ class _EditPatientPageState extends State<EditPatientPage> {
   late TextEditingController _nikController;
   late TextEditingController _namaController;
   late TextEditingController _lahirController;
-  late TextEditingController _pekerjaanController;
   late TextEditingController _emailController;
   late TextEditingController _nomorController;
+  late TextEditingController _tanggalPemeriksaanController;
 
   String _selectedGender = '';
   String _selectedDistrict = '';
@@ -159,15 +158,15 @@ class _EditPatientPageState extends State<EditPatientPage> {
 
   List<String> listProfession = [
     'Belum/Tidak Bekerja',
+    'Buruh',
+    'Lainnya',
     'Mengurus Rumah Tangga',
     'Pelajar/Mahasiswa',
-    'Pegawai Negeri Sipil',
-    'Wiraswasta',
-    'Petani/Pekebun',
     'Pensiunan',
-    'Buruh',
+    'Petani/Pekebun',
+    'PNS',
     'Tukang',
-    'Lainnya',
+    'Wiraswasta',
   ];
 
   late DatabaseReference dbRef;
@@ -182,6 +181,7 @@ class _EditPatientPageState extends State<EditPatientPage> {
     _nikController = TextEditingController(text: widget.patientData['nik'] ?? '');
     _namaController = TextEditingController(text: widget.patientData['nama'] ?? '');
     _lahirController = TextEditingController(text: widget.patientData['ttl'] ?? '');
+    _tanggalPemeriksaanController = TextEditingController(text: widget.patientData['tanggal_pemeriksaan'] ?? '');
     _emailController = TextEditingController(text: widget.patientData['email'] ?? '');
     _nomorController = TextEditingController(text: widget.patientData['nomor'] ?? '');
 
@@ -216,6 +216,7 @@ class _EditPatientPageState extends State<EditPatientPage> {
       'pekerjaan': _selectedProfession.trim(),
       'email': _emailController.text.trim(),
       'nomor': _nomorController.text.trim(),
+      'tanggal_pemeriksaan': _tanggalPemeriksaanController.text.trim(),
     };
     
     // Preserve any existing fields (like total_karies, etc.)
@@ -257,6 +258,7 @@ class _EditPatientPageState extends State<EditPatientPage> {
     _nikController.dispose();
     _namaController.dispose();
     _lahirController.dispose();
+    _tanggalPemeriksaanController.dispose();
     _emailController.dispose();
     _nomorController.dispose();
     super.dispose();
@@ -298,11 +300,17 @@ class _EditPatientPageState extends State<EditPatientPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _buildDateField("Tanggal Pemeriksaan", _tanggalPemeriksaanController,
+                        firstDate: DateTime(DateTime.now().year, DateTime.now().month - 1, DateTime.now().day),
+                        lastDate: DateTime(DateTime.now().year, DateTime.now().month + 1, DateTime.now().day),
+                        initialDate: DateTime.now()),
                     _buildNikField("NIK", _nikController),
                     const SizedBox(height: 10),
                     _buildNameField("Nama Lengkap", _namaController),
                     const SizedBox(height: 10),
-                    _buildDateField("Tanggal Lahir", _lahirController),
+                    _buildDateField("Tanggal Lahir", _lahirController, 
+                        lastDate: DateTime(DateTime.now().year - 15, DateTime.now().month, DateTime.now().day),
+                        initialDate: DateTime(DateTime.now().year - 15, DateTime.now().month, DateTime.now().day)),
                     _buildGenderDropdown("Jenis Kelamin"),
                     _buildDistrictDropdown("Kecamatan"),
                     _buildVillageDropdown("Desa"),
@@ -416,7 +424,7 @@ class _EditPatientPageState extends State<EditPatientPage> {
     );
   }
 
-  Widget _buildDateField(String hintText, TextEditingController controller) {
+  Widget _buildDateField(String hintText, TextEditingController controller, {DateTime? firstDate, DateTime? lastDate, DateTime? initialDate}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       child: Column(
@@ -424,9 +432,9 @@ class _EditPatientPageState extends State<EditPatientPage> {
         children: [
           DateTimePicker(
             type: DateTimePickerType.date,
-            controller: _lahirController,
+            controller: controller,
             decoration: InputDecoration(
-              hintText: "Tanggal Lahir",
+              hintText: hintText,
               hintStyle: GoogleFonts.poppins(
                 fontStyle: FontStyle.normal,
                 fontWeight: FontWeight.normal,
@@ -456,8 +464,9 @@ class _EditPatientPageState extends State<EditPatientPage> {
               ),
             ),
             dateMask: 'dd/MM/yyyy',
-            firstDate: DateTime(1900),
-            lastDate: DateTime(2101),
+            firstDate: firstDate ?? DateTime(1900),
+            initialDate: initialDate ?? lastDate ?? DateTime.now(),
+            lastDate: lastDate ?? DateTime(2101),
             onChanged: (val) {},
             validator: (val) {
               if (val!.isEmpty) {

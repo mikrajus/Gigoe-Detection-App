@@ -84,6 +84,15 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
         ),
+        builder: (context, child) {
+          final mediaQueryData = MediaQuery.of(context);
+          return MediaQuery(
+            data: mediaQueryData.copyWith(
+              textScaler: TextScaler.linear(mediaQueryData.textScaler.scale(1.0) * 1.12),
+            ),
+            child: child!,
+          );
+        },
         // initialRoute: '/main', // <-- Tambahkan baris ini
         routes: {
           '/': (context) => const SplashPage(),

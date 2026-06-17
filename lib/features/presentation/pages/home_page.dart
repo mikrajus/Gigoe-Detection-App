@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import '../widgets/custom_chart.dart';
@@ -85,7 +86,8 @@ class _HomePageState extends State<HomePage> {
                   width: MediaQuery.of(context).size.width / 1.12,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
-                    color: AppColors.primaryBlue,
+                    gradient: AppColors.primaryGradient,
+                    boxShadow: AppColors.subtleShadow,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -116,7 +118,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-            ),
+            ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.2, end: 0),
             const SizedBox(height: 20),
             CarouselSlider(
               items: images.map((imagePath) {
@@ -138,13 +140,17 @@ class _HomePageState extends State<HomePage> {
                 enlargeCenterPage: true,
                 enableInfiniteScroll: true,
               ),
-            ),
+            )
+                .animate()
+                .fadeIn(duration: 600.ms, delay: 100.ms)
+                .slideY(begin: 0.2, end: 0),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.white,
+                  boxShadow: AppColors.subtleShadow,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
@@ -152,7 +158,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Peta Sebaran",
+                        "Peta Sebaran Karies",
                         style: GoogleFonts.poppins(
                             color: AppColors.darkBlue,
                             fontSize: 20,
@@ -169,7 +175,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-            ),
+            )
+                .animate()
+                .fadeIn(duration: 600.ms, delay: 200.ms)
+                .slideY(begin: 0.2, end: 0),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: BlocBuilder<DataChartBloc, DataChartState>(
@@ -180,13 +189,17 @@ class _HomePageState extends State<HomePage> {
                   return const SizedBox();
                 },
               ),
-            ),
+            )
+                .animate()
+                .fadeIn(duration: 600.ms, delay: 300.ms)
+                .slideY(begin: 0.2, end: 0),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 90),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.white,
+                  boxShadow: AppColors.subtleShadow,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(15, 10, 10, 10),
@@ -204,7 +217,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-            ),
+            )
+                .animate()
+                .fadeIn(duration: 600.ms, delay: 400.ms)
+                .slideY(begin: 0.2, end: 0),
           ],
         ),
       ),

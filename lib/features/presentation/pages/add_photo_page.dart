@@ -142,7 +142,7 @@ class _AddPhotoState extends State<AddPhoto> {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -174,7 +174,7 @@ class _AddPhotoState extends State<AddPhoto> {
             child: Container(
               width: double.maxFinite,
               decoration: BoxDecoration(
-                color: Colors.black12,
+                color: imageFile != null ? Colors.transparent : Colors.black12,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: imageFile != null
@@ -182,7 +182,7 @@ class _AddPhotoState extends State<AddPhoto> {
                       borderRadius: BorderRadius.circular(12),
                       child: Image.file(
                         File(imageFile),
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                       ),
                     )
                   : const Column(
@@ -374,7 +374,16 @@ class _AddPhotoState extends State<AddPhoto> {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return ResultDetectionPage(name: name);
+                  return ResultDetectionPage(
+                    name: name,
+                    imagePaths: {
+                      'front': _imageFiles['Gigi Labial'] ?? '',
+                      'right': _imageFiles['Gigi Bukal Kanan'] ?? '',
+                      'left': _imageFiles['Gigi Bukal Kiri'] ?? '',
+                      'upper': _imageFiles['Gigi Oklusal Atas'] ?? '',
+                      'lower': _imageFiles['Gigi Oklusal Bawah'] ?? '',
+                    },
+                  );
                 },
               ),
             );

@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/utils/app_colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -20,11 +21,16 @@ class _AddPatientState extends State<AddPatient> {
   final TextEditingController _pekerjaanController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nomorController = TextEditingController();
+  final TextEditingController _tanggalPemeriksaanController = TextEditingController();
+
+  int _currentStep = 0;
+  final _formKey = GlobalKey<FormState>();
 
   String _selectedGender = '';
   String _selectedDistrict = '';
   String _selectedVillage = '';
   String _selectedProfession = '';
+  bool _shouldScan = true;
 
   List<String> listDistrict = [
     'Baiturrahman',
@@ -156,15 +162,15 @@ class _AddPatientState extends State<AddPatient> {
 
   List<String> listProfession = [
     'Belum/Tidak Bekerja',
+    'Buruh',
+    'Lainnya',
     'Mengurus Rumah Tangga',
     'Pelajar/Mahasiswa',
-    'Pegawai Negeri Sipil',
-    'Wiraswasta',
-    'Petani/Pekebun',
     'Pensiunan',
-    'Buruh',
+    'Petani/Pekebun',
+    'PNS',
     'Tukang',
-    'Lainnya',
+    'Wiraswasta',
   ];
 
   late DatabaseReference dbRef;
@@ -188,6 +194,7 @@ class _AddPatientState extends State<AddPatient> {
       'pekerjaan': _selectedProfession.trim(),
       'email': _emailController.text.trim(),
       'nomor': _nomorController.text.trim(),
+      'tanggal_pemeriksaan': _tanggalPemeriksaanController.text.trim(),
     };
     if (_namaController.text.isNotEmpty) {
       // ignore: unnecessary_string_interpolations
@@ -207,14 +214,12 @@ class _AddPatientState extends State<AddPatient> {
     _pekerjaanController.dispose();
     _emailController.dispose();
     _nomorController.dispose();
+    _tanggalPemeriksaanController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: AppColors.softWhite,
       appBar: AppBar(
@@ -239,62 +244,286 @@ class _AddPatientState extends State<AddPatient> {
           ),
         ),
       ),
-      body: SizedBox(
-        height: screenHeight,
-        child: ListView(
-          children: [
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      body: Form(
+        key: _formKey,
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(primary: AppColors.primaryBlue),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 90),
+            child: Stepper(
+            type: StepperType.vertical,
+            currentStep: _currentStep,
+            onStepContinue: () {
+              // Manual validation for each step to avoid silent failures
+              if (_currentStep == 0) {
+                if (_nikController.text.isEmpty || _namaController.text.isEmpty || _lahirController.text.isEmpty || _tanggalPemeriksaanController.text.isEmpty || _selectedGender.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Harap lengkapi NIK, Nama, Tgl Lahir, Tgl Periksa, dan Jenis Kelamin', style: GoogleFonts.poppins()), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+              } else if (_currentStep == 1) {
+                if (_selectedDistrict.isEmpty || _selectedVillage.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Harap lengkapi Kecamatan dan Kelurahan/Desa', style: GoogleFonts.poppins()), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+              } else if (_currentStep == 2) {
+                if (_selectedProfession.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Harap pilih Pekerjaan', style: GoogleFonts.poppins()), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+              }
+
+              final isLastStep = _currentStep == 3;
+              if (isLastStep) {
+                if (_formKey.currentState!.validate()) {
+                  _tambahpasien();
+                  if (_shouldScan) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/add_photo',
+                      (route) => false,
+                      arguments: _namaController.text.trim(),
+                    );
+                  } else {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/main',
+                      (route) => false,
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Terdapat data yang belum valid, periksa kembali', style: GoogleFonts.poppins()), backgroundColor: Colors.red),
+                  );
+                }
+              } else {
+                setState(() {
+                  _currentStep += 1;
+                });
+              }
+            },
+            onStepCancel: () {
+              if (_currentStep > 0) {
+                setState(() {
+                  _currentStep -= 1;
+                });
+              } else {
+                Navigator.pop(context);
+              }
+            },
+            controlsBuilder: (context, details) {
+              final isLastStep = _currentStep == 3;
+              return Container(
+                margin: const EdgeInsets.only(top: 20, bottom: 10),
+                child: Row(
                   children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: details.onStepContinue,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryBlue,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          isLastStep
+                              ? (_shouldScan ? 'Simpan & Mulai Pemindaian' : 'Simpan & Selesai')
+                              : 'Selanjutnya',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    if (_currentStep > 0)
+                      Expanded(
+                        child: TextButton(
+                          onPressed: details.onStepCancel,
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                          ),
+                          child: Text(
+                            'Kembali',
+                            style: GoogleFonts.poppins(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+            steps: [
+              Step(
+                title: Text('Data Utama', style: GoogleFonts.poppins()),
+                isActive: _currentStep >= 0,
+                state: _currentStep > 0 ? StepState.complete : StepState.indexed,
+                content: Column(
+                  children: [
+                    _buildDateField("Tanggal Pemeriksaan", _tanggalPemeriksaanController,
+                        firstDate: DateTime(DateTime.now().year, DateTime.now().month - 1, DateTime.now().day),
+                        lastDate: DateTime(DateTime.now().year, DateTime.now().month + 1, DateTime.now().day),
+                        initialDate: DateTime.now()),
                     _buildNikField("NIK", _nikController),
                     const SizedBox(height: 10),
                     _buildNameField("Nama Lengkap", _namaController),
                     const SizedBox(height: 10),
-                    _buildDateField("Tanggal Lahir", _lahirController),
+                    _buildDateField("Tanggal Lahir", _lahirController, 
+                        lastDate: DateTime(DateTime.now().year - 15, DateTime.now().month, DateTime.now().day),
+                        initialDate: DateTime(DateTime.now().year - 15, DateTime.now().month, DateTime.now().day)),
                     _buildGenderDropdown("Jenis Kelamin"),
+                  ],
+                ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
+              ),
+              Step(
+                title: Text('Alamat', style: GoogleFonts.poppins()),
+                isActive: _currentStep >= 1,
+                state: _currentStep > 1 ? StepState.complete : StepState.indexed,
+                content: Column(
+                  children: [
                     _buildDistrictDropdown("Kecamatan"),
                     _buildVillageDropdown("Desa"),
+                  ],
+                ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
+              ),
+              Step(
+                title: Text('Pekerjaan & Kontak', style: GoogleFonts.poppins()),
+                isActive: _currentStep >= 2,
+                state: _currentStep > 2 ? StepState.complete : StepState.indexed,
+                content: Column(
+                  children: [
                     _buildProfessionDropdown("Pekerjaan"),
-                    _buildEmailField("Alamat Email", _emailController),
                     const SizedBox(height: 10),
-                    _buildPhoneField("Nomor Handphone", _nomorController),
-                    const SizedBox(height: 35),
-                    MaterialButton(
-                      onPressed: () {
-                        _tambahpasien();
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          '/add_photo',
-                          (route) => false,
-                          arguments: _namaController.text.trim(),
-                        );
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      color: AppColors.primaryBlue,
-                      textColor: Colors.white,
-                      minWidth: screenWidth,
-                      // minWidth: 300,
-                      height: 50,
-                      child: Text(
-                        'Lanjutkan',
-                        style: GoogleFonts.poppins(fontSize: 14),
+                    _buildEmailField("Alamat Email (Opsional)", _emailController),
+                    const SizedBox(height: 10),
+                    _buildPhoneField("Nomor Handphone (Opsional)", _nomorController),
+                  ],
+                ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
+              ),
+              Step(
+                title: Text('Pilihan Pemindaian', style: GoogleFonts.poppins()),
+                isActive: _currentStep >= 3,
+                state: _currentStep > 3 ? StepState.complete : StepState.indexed,
+                content: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Apakah Anda ingin langsung melakukan pemindaian foto gigi untuk pasien ini?",
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: AppColors.darkBlue,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 80),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _shouldScan = true;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: _shouldScan ? AppColors.primaryBlue.withValues(alpha: 0.1) : Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: _shouldScan ? AppColors.primaryBlue : Colors.grey.shade300,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.photo_camera_rounded,
+                                    color: _shouldScan ? AppColors.primaryBlue : Colors.grey,
+                                    size: 32,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "Ya, Pindai Sekarang",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: _shouldScan ? AppColors.primaryBlue : Colors.grey.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _shouldScan = false;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: !_shouldScan ? AppColors.primaryBlue.withValues(alpha: 0.1) : Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: !_shouldScan ? AppColors.primaryBlue : Colors.grey.shade300,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.check_circle_outline_rounded,
+                                    color: !_shouldScan ? AppColors.primaryBlue : Colors.grey,
+                                    size: 32,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "Tidak, Simpan Saja",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: !_shouldScan ? AppColors.primaryBlue : Colors.grey.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
-                ),
+                ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildNikField(String hintText, TextEditingController controller) {
     return TextFormField(
@@ -373,10 +602,16 @@ class _AddPatientState extends State<AddPatient> {
           ),
         ),
       ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Nama Lengkap harus diisi';
+        }
+        return null;
+      },
     );
   }
 
-  Widget _buildDateField(String hintText, TextEditingController controller) {
+  Widget _buildDateField(String hintText, TextEditingController controller, {DateTime? firstDate, DateTime? lastDate, DateTime? initialDate}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       child: Column(
@@ -384,9 +619,9 @@ class _AddPatientState extends State<AddPatient> {
         children: [
           DateTimePicker(
             type: DateTimePickerType.date,
-            controller: _lahirController,
+            controller: controller,
             decoration: InputDecoration(
-              hintText: "Tanggal Lahir",
+              hintText: hintText,
               hintStyle: GoogleFonts.poppins(
                 fontStyle: FontStyle.normal,
                 fontWeight: FontWeight.normal,
@@ -417,8 +652,9 @@ class _AddPatientState extends State<AddPatient> {
             ),
             dateMask: 'dd/MM/yyyy',
             // initialValue: '',
-            firstDate: DateTime(1900),
-            lastDate: DateTime(2101),
+            firstDate: firstDate ?? DateTime(1900),
+            initialDate: initialDate ?? lastDate ?? DateTime.now(),
+            lastDate: lastDate ?? DateTime(2101),
             onChanged: (val) {},
             validator: (val) {
               if (val!.isEmpty) {
@@ -439,9 +675,7 @@ class _AddPatientState extends State<AddPatient> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 50,
-            child: DropdownButtonFormField<String>(
+          DropdownButtonFormField<String>(
               initialValue: _selectedGender.isNotEmpty ? _selectedGender : null,
               onChanged: (String? newValue) {
                 setState(() {
@@ -485,8 +719,13 @@ class _AddPatientState extends State<AddPatient> {
                   ),
                 ),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Jenis kelamin harus dipilih';
+                }
+                return null;
+              },
             ),
-          ),
         ],
       ),
     );
@@ -498,9 +737,7 @@ class _AddPatientState extends State<AddPatient> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 50,
-            child: DropdownButtonFormField<String>(
+          DropdownButtonFormField<String>(
               initialValue: _selectedDistrict.isNotEmpty ? _selectedDistrict : null,
               onChanged: (newValue) {
                 setState(() {
@@ -545,8 +782,13 @@ class _AddPatientState extends State<AddPatient> {
                   ),
                 ),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Kecamatan harus dipilih';
+                }
+                return null;
+              },
             ),
-          ),
         ],
       ),
     );
@@ -558,9 +800,7 @@ class _AddPatientState extends State<AddPatient> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 50,
-            child: DropdownButtonFormField<String>(
+          DropdownButtonFormField<String>(
               initialValue: _selectedVillage.isNotEmpty ? _selectedVillage : null,
               onChanged: (String? newValue) {
                 setState(() {
@@ -607,8 +847,13 @@ class _AddPatientState extends State<AddPatient> {
                   ),
                 ),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Kelurahan/Desa harus dipilih';
+                }
+                return null;
+              },
             ),
-          ),
         ],
       ),
     );
@@ -620,9 +865,7 @@ class _AddPatientState extends State<AddPatient> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 50,
-            child: DropdownButtonFormField<String>(
+          DropdownButtonFormField<String>(
               initialValue:
                   _selectedProfession.isNotEmpty ? _selectedProfession : null,
               onChanged: (String? newValue) {
@@ -667,8 +910,13 @@ class _AddPatientState extends State<AddPatient> {
                   ),
                 ),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Pekerjaan harus dipilih';
+                }
+                return null;
+              },
             ),
-          ),
         ],
       ),
     );

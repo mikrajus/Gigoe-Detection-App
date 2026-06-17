@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
@@ -32,9 +31,6 @@ double computeIoU(BBox a, BBox b) {
 }
 
 class LocalMLDataSource {
-  Interpreter? _interpreter;
-  List<String>? _labels;
-
   LocalMLDataSource() {
     _loadModel();
     _loadLabels();
@@ -43,10 +39,6 @@ class LocalMLDataSource {
   Future<void> _loadModel() async {}
 
   Future<void> _loadLabels() async {}
-
-  img.Image? _preProcessImage(img.Image originalImage) {
-    return img.copyResize(originalImage, width: 640, height: 640);
-  }
 
   static final Map<String, Future<List<BBox>>> _inferenceFutures = {};
 
@@ -79,7 +71,6 @@ class LocalMLDataSource {
         'imagePath': imagePath,
       });
     } catch (e) {
-      print("Error loading assets for isolate: \$e");
       rethrow;
     }
   }
@@ -138,15 +129,12 @@ class LocalMLDataSource {
       double scaleX = 1.0;
       double scaleY = 1.0;
       
-      // Auto-detect if coordinates are normalized (0.0-1.0) or absolute (0-640)
       if ((output)[0][2][0] <= 1.5) {
         scaleX = originalWidth;
         scaleY = originalHeight;
-        print("SCALE MODE: NORMALIZED (0-1)");
       } else {
         scaleX = originalWidth / 640.0;
         scaleY = originalHeight / 640.0;
-        print("SCALE MODE: ABSOLUTE (0-640)");
       }
 
       for (int anchor = 0; anchor < 8400; anchor++) {
@@ -215,7 +203,6 @@ class LocalMLDataSource {
         predictions: predictions,
       );
     } catch (e) {
-      print("CLASSIFICATION ERROR: \$e");
       rethrow;
     }
   }
@@ -227,24 +214,40 @@ class LocalMLDataSource {
     try {
       List<BBox> boxes = await _getNMSBoxes(imagePath);
 
-      return await compute(_drawAndEncodeInIsolate, {
+      return await compute(drawAndEncodeInIsolate, {
         'boxes': boxes,
         'imagePath': imagePath,
       });
     } catch (e) {
-      print("ANNOTATION ERROR: \$e");
       final bytes = File(imagePath).readAsBytesSync();
       return Uint8List.fromList(bytes);
     }
   }
 
-  static Future<Uint8List> _drawAndEncodeInIsolate(Map<String, dynamic> params) async {
+  static Future<Uint8List> drawAndEncodeInIsolate(Map<String, dynamic> params) async {
     List<BBox> boxes = params['boxes'];
     final String imagePath = params['imagePath'];
     
     final bytes = File(imagePath).readAsBytesSync();
     img.Image? originalImage = img.decodeImage(bytes);
     if (originalImage == null) return Uint8List.fromList(bytes);
+
+    int imgWidth = originalImage.width;
+    int thickness = max(1, (imgWidth / 500).round());
+    
+    img.BitmapFont fontToUse;
+    int yOffset;
+    
+    if (imgWidth <= 1280) {
+      fontToUse = img.arial14;
+      yOffset = 16;
+    } else if (imgWidth <= 2560) {
+      fontToUse = img.arial24;
+      yOffset = 28;
+    } else {
+      fontToUse = img.arial48;
+      yOffset = 52;
+    }
 
     for (var box in boxes) {
       img.Color color;
@@ -265,15 +268,15 @@ class LocalMLDataSource {
         x2: box.right.toInt(),
         y2: box.bottom.toInt(),
         color: color,
-        thickness: 5,
+        thickness: thickness, // Sangat tipis
       );
 
       img.drawString(
         originalImage,
-        box.label + " " + (box.score * 100).toInt().toString() + "%",
-        font: img.arial24,
+        box.label,
+        font: fontToUse,
         x: box.left.toInt(),
-        y: max(0, box.top.toInt() - 28),
+        y: max(0, box.top.toInt() - yOffset),
         color: color,
       );
     }

@@ -12,6 +12,32 @@ class GuidePage extends StatefulWidget {
 }
 
 class _GuidePageState extends State<GuidePage> {
+  int _current = 0;
+  final CarouselSliderController _controller = CarouselSliderController();
+
+  final List<Map<String, String>> _guideSlides = [
+    {
+      "title": "Foto 1 - Gigi Labial",
+      "image": "assets/images/gigi_depan.JPG"
+    },
+    {
+      "title": "Foto 2 - Gigi Bukal Kanan",
+      "image": "assets/images/gigi_kanan.JPG"
+    },
+    {
+      "title": "Foto 3 - Gigi Bukal Kiri",
+      "image": "assets/images/gigi_kiri.JPG"
+    },
+    {
+      "title": "Foto 4 - Gigi Oklusal Atas",
+      "image": "assets/images/gigi_atas.JPG"
+    },
+    {
+      "title": "Foto 5 - Gigi Oklusal Bawah",
+      "image": "assets/images/gigi_bawah.JPG"
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -44,18 +70,10 @@ class _GuidePageState extends State<GuidePage> {
         children: [
           const SizedBox(height: 40),
           CarouselSlider(
-            items: [
-              _buildPhotoSlide(
-                  "Foto 1 - Gigi Labial", "assets/images/gigi_depan.JPG"),
-              _buildPhotoSlide(
-                  "Foto 2 - Gigi Bukal Kanan", "assets/images/gigi_kanan.JPG"),
-              _buildPhotoSlide(
-                  "Foto 3 - Gigi Bukal Kiri", "assets/images/gigi_kiri.JPG"),
-              _buildPhotoSlide(
-                  "Foto 4 - Gigi Oklusal Atas", "assets/images/gigi_atas.JPG"),
-              _buildPhotoSlide(
-                  "Foto 5 - Gigi Oklusal Bawah", "assets/images/gigi_bawah.JPG")
-            ],
+            carouselController: _controller,
+            items: _guideSlides.map((slide) {
+              return _buildPhotoSlide(slide['title']!, slide['image']!);
+            }).toList(),
             options: CarouselOptions(
               height: height * 0.43,
               disableCenter: true,
@@ -65,14 +83,37 @@ class _GuidePageState extends State<GuidePage> {
               enlargeCenterPage: true,
               enableInfiniteScroll: true,
               onPageChanged: (index, reason) {
+                setState(() {
+                  _current = index;
+                });
                 if (kDebugMode) {
                   print('Halaman berubah ke: $index');
                 }
               },
             ),
           ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: _guideSlides.asMap().entries.map((entry) {
+              return GestureDetector(
+                onTap: () => _controller.animateToPage(entry.key),
+                child: Container(
+                  width: 8.0,
+                  height: 8.0,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _current == entry.key
+                        ? AppColors.primaryBlue
+                        : Colors.black.withValues(alpha: 0.2),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
+            padding: const EdgeInsets.fromLTRB(30, 10, 30, 20),
             child: Container(
               decoration: const BoxDecoration(
                 color: Colors.white,

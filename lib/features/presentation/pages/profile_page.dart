@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../core/utils/app_colors.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -12,7 +14,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffCBE4DE),
+      backgroundColor: AppColors.softWhite,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -34,8 +36,8 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             gradient: LinearGradient(
               colors: [
-                Color(0xff2E4F4F),
-                Color(0xff0E8388),
+                AppColors.primaryBlue,
+                AppColors.darkBlue,
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -53,6 +55,13 @@ class _ProfilePageState extends State<ProfilePage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
@@ -86,7 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             const Icon(
                               Icons.phone,
                               size: 20,
-                              color: Color(0xff0E8388),
+                              color: AppColors.primaryBlue,
                             ),
                             const SizedBox(width: 5),
                             Text(
@@ -103,7 +112,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             const Icon(
                               Icons.credit_card,
                               size: 20,
-                              color: Color(0xff0E8388),
+                              color: AppColors.primaryBlue,
                             ),
                             const SizedBox(width: 5),
                             Text(
@@ -126,7 +135,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Text(
                 "Informasi",
                 style: GoogleFonts.poppins(
-                    color: const Color(0xff2E4F4F),
+                    color: AppColors.darkBlue,
                     fontSize: 20,
                     fontWeight: FontWeight.w600),
               ),
@@ -137,6 +146,13 @@ class _ProfilePageState extends State<ProfilePage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -148,7 +164,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       const Icon(
                         Icons.chat_rounded,
                         size: 20,
-                        color: Color(0xff0E8388),
+                        color: AppColors.primaryBlue,
                       ),
                       const SizedBox(width: 20),
                       Text(
@@ -158,9 +174,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                  const Divider(
-                    color: Color(0xffA1D0D2),
-                    thickness: 2,
+                  Divider(
+                    color: Colors.grey.shade300,
+                    thickness: 1,
                     height: 20,
                     indent: 20,
                     endIndent: 20,
@@ -172,7 +188,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       const Icon(
                         Icons.menu_book_rounded,
                         size: 20,
-                        color: Color(0xff0E8388),
+                        color: AppColors.primaryBlue,
                       ),
                       const SizedBox(width: 20),
                       Text(
@@ -190,7 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Text(
                 "Preferensi",
                 style: GoogleFonts.poppins(
-                    color: const Color(0xff2E4F4F),
+                    color: AppColors.darkBlue,
                     fontSize: 20,
                     fontWeight: FontWeight.w600),
               ),
@@ -201,6 +217,13 @@ class _ProfilePageState extends State<ProfilePage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -212,7 +235,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       const Icon(
                         Icons.translate_rounded,
                         size: 20,
-                        color: Color(0xff0E8388),
+                        color: AppColors.primaryBlue,
                       ),
                       const SizedBox(width: 20),
                       Text(
@@ -222,9 +245,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                  const Divider(
-                    color: Color(0xffA1D0D2),
-                    thickness: 2,
+                  Divider(
+                    color: Colors.grey.shade300,
+                    thickness: 1,
                     height: 20,
                     indent: 20,
                     endIndent: 20,
@@ -236,7 +259,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       const Icon(
                         Icons.logout_rounded,
                         size: 20,
-                        color: Color(0xff0E8388),
+                        color: Colors.red,
                       ),
                       const SizedBox(width: 20),
                       InkWell(
@@ -257,7 +280,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Container(
-                                      color: Colors.red[900], // Warna bar
+                                      color: Colors.red, // Warna bar
                                       padding: const EdgeInsets.all(16.0),
                                       child: Row(
                                         children: [
@@ -290,7 +313,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           child: Text(
                                             "Batal",
                                             style: GoogleFonts.poppins(
-                                              color: const Color(0xff2E4F4F),
+                                              color: Colors.grey,
                                             ),
                                           ),
                                           onPressed: () {
@@ -298,14 +321,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                           },
                                         ),
                                         TextButton(
-                                          onPressed: () {
-                                            Navigator.pushNamedAndRemoveUntil(
-                                                context,
-                                                '/signIn-page',
-                                                (route) => false);
+                                          onPressed: () async {
+                                            debugPrint("[ProfilePage] Logging out... currentUser before signout: ${FirebaseAuth.instance.currentUser?.uid}");
+                                            try {
+                                              await FirebaseAuth.instance.signOut();
+                                              debugPrint("[ProfilePage] Logged out successfully. currentUser after signout: ${FirebaseAuth.instance.currentUser?.uid}");
+                                            } catch (e) {
+                                              debugPrint("[ProfilePage] Error signing out: $e");
+                                            }
+                                            if (context.mounted) {
+                                              Navigator.pushNamedAndRemoveUntil(
+                                                  context,
+                                                  '/login_page',
+                                                  (route) => false);
+                                            }
                                           },
                                           style: TextButton.styleFrom(
-                                              foregroundColor: Colors.red[900],
+                                              foregroundColor: Colors.red,
                                               textStyle: GoogleFonts.poppins(
                                                 color: Colors.white,
                                                 fontSize: 12,

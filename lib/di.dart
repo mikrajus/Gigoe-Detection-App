@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get_it/get_it.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+
+import 'core/network/network_info.dart';
 
 import 'features/data/datasources/remote_data_source.dart';
 import 'features/data/datasources/local_ml_data_source.dart';
@@ -74,7 +77,11 @@ Future<void> setup() async {
 
   // REPOSITORY INJECTION
   locator.registerLazySingleton<PredictRepository>(
-    () => PredictRepositoryImpl(dataSource: locator()),
+    () => PredictRepositoryImpl(
+      remoteDataSource: locator(),
+      localDataSource: locator(),
+      networkInfo: locator(),
+    ),
   );
 
   locator.registerLazySingleton<FirebaseRepository>(
@@ -87,6 +94,10 @@ Future<void> setup() async {
   );
 
   locator.registerLazySingleton<PredictRemoteDataSource>(
+    () => PredictRemoteDataSourceImpl(locator()),
+  );
+
+  locator.registerLazySingleton<PredictLocalDataSourceImpl>(
     () => PredictLocalDataSourceImpl(locator()),
   );
 
@@ -97,4 +108,8 @@ Future<void> setup() async {
   // EXTERNAL
   locator.registerLazySingleton(() => Dio());
   locator.registerLazySingleton(() => FirebaseDatabase.instance);
+  locator.registerLazySingleton(() => Connectivity());
+  
+  // CORE
+  locator.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(locator()));
 }

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../../../core/error/exceptions.dart';
 import '../models/caries_model.dart';
+import 'local_ml_data_source.dart';
 
 abstract class PredictRemoteDataSource {
   Future<CariesModel> frontImageClassification(String imageFront);
@@ -19,7 +20,7 @@ abstract class PredictRemoteDataSource {
 const baseApi = 'https://detect.roboflow.com/caries-k4k7c/4';
 const apiKeys = 'o9jAVJnztawPlAP7eD7x';
 const jsonFormat = 'json';
-const imageFormat = 'image&labels=on&stroke=10';
+const imageFormat = 'image&labels=on&stroke=2';
 const apiURL = '$baseApi?api_key=$apiKeys&confidence=40&overlap=30&format=';
 
 class PredictRemoteDataSourceImpl implements PredictRemoteDataSource {
@@ -101,16 +102,31 @@ class PredictRemoteDataSourceImpl implements PredictRemoteDataSource {
     });
 
     final Response response = await dio.post(
-      "$apiURL$imageFormat",
+      "$apiURL$jsonFormat",
       data: formData,
       options: Options(
         contentType: "multipart/form-data",
-        responseType: ResponseType.bytes,
       ),
     );
 
     if (response.statusCode == 200) {
-      return response.data;
+      List<BBox> boxes = [];
+      if (response.data != null && response.data['predictions'] != null) {
+        for (var p in response.data['predictions']) {
+          double cx = (p['x'] as num).toDouble();
+          double cy = (p['y'] as num).toDouble();
+          double w = (p['width'] as num).toDouble();
+          double h = (p['height'] as num).toDouble();
+          double confidence = (p['confidence'] as num).toDouble();
+          String label = p['class'].toString();
+          
+          boxes.add(BBox(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2, confidence, 0, label));
+        }
+      }
+      return await compute(LocalMLDataSource.drawAndEncodeInIsolate, {
+        'boxes': boxes,
+        'imagePath': imgPath,
+      });
     } else {
       throw ServerException();
     }
