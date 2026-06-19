@@ -1,0 +1,31 @@
+name: iOS Build
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # Memungkinkan Anda menekan tombol "Run workflow" secara manual di GitHub
+
+jobs:
+  build-ios:
+    runs-on: macos-latest # Menggunakan server macOS milik GitHub
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable' # Menggunakan versi Flutter stabil terbaru
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS (Tanpa Code Signing)
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload iOS App Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-app
+          path: build/ios/iphoneos/*.app
