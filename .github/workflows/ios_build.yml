@@ -41,8 +41,17 @@ jobs:
       - name: Build iOS (Tanpa Code Signing)
         run: flutter build ios --release --no-codesign
 
+      - name: Create Unsigned IPA (Untuk Sideloading di Windows)
+        run: |
+          cd build/ios/iphoneos
+          mkdir Payload
+          # Pindahkan Runner.app ke dalam folder Payload
+          mv Runner.app Payload/
+          # Zip folder Payload menjadi file .ipa
+          zip -qr app-unsigned.ipa Payload
+
       - name: Upload iOS App Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-build-app
-          path: build/ios/iphoneos/*.app
+          name: ios-build-ipa
+          path: build/ios/iphoneos/app-unsigned.ipa
