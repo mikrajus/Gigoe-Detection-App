@@ -27,6 +27,9 @@ jobs:
           sed -i '' 's/# platform :ios, .*/platform :ios, '\''15.0'\''/g' Podfile || true
           sed -i '' 's/platform :ios, .*/platform :ios, '\''15.0'\''/g' Podfile || true
 
+      - name: Fix rsync mkdir error for Swift Package Manager
+        run: mkdir -p build/ios/SourcePackages
+
       - name: Build iOS (Tanpa Code Signing)
         run: flutter build ios --release --no-codesign
 
