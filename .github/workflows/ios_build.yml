@@ -18,6 +18,9 @@ jobs:
         with:
           channel: 'stable' # Menggunakan versi Flutter stabil terbaru
 
+      - name: Disable Swift Package Manager (Fix rsync bug)
+        run: flutter config --no-enable-swift-package-manager
+
       - name: Install dependencies
         run: flutter pub get
 
