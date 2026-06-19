@@ -21,6 +21,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Force iOS Deployment Target to 15.0
+        run: |
+          cd ios
+          sed -i '' 's/# platform :ios, .*/platform :ios, '\''15.0'\''/g' Podfile || true
+          sed -i '' 's/platform :ios, .*/platform :ios, '\''15.0'\''/g' Podfile || true
+
       - name: Build iOS (Tanpa Code Signing)
         run: flutter build ios --release --no-codesign
 
