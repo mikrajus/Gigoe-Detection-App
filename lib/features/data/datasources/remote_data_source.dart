@@ -54,6 +54,9 @@ class PredictRemoteDataSourceImpl implements PredictRemoteDataSource {
   }
 
   Future<CariesModel> _imageClassification(String imagePath) async {
+    if (imagePath.isEmpty || imagePath == "null") {
+      return CariesModel(time: 0.0, predictions: []);
+    }
     FormData formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(imagePath),
     });
@@ -97,6 +100,9 @@ class PredictRemoteDataSourceImpl implements PredictRemoteDataSource {
   }
 
   Future<Uint8List> _imageResponse(String imgPath) async {
+    if (imgPath.isEmpty || imgPath == "null") {
+      return Uint8List(0);
+    }
     FormData formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(imgPath),
     });

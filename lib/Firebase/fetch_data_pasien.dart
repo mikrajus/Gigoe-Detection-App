@@ -54,7 +54,7 @@ class _FetchDataResultsState extends State<FetchDataResults> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      results['nama'],
+                      results['nama']?.toString() ?? 'Tanpa Nama',
                       style: GoogleFonts.poppins(
                         color: AppColors.darkBlue,
                         fontSize: 16,
@@ -70,7 +70,7 @@ class _FetchDataResultsState extends State<FetchDataResults> {
                         ),
                         const SizedBox(width: 5),
                         Text(
-                          results['nik'],
+                          results['nik']?.toString() ?? '-',
                           style: GoogleFonts.poppins(
                             color: Colors.grey,
                             fontSize: 12,
