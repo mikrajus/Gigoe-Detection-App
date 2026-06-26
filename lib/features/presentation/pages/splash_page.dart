@@ -23,7 +23,7 @@ class _SplashPageState extends State<SplashPage> {
       debugPrint("[SplashPage] Checking auth session on start: user is ${user != null ? 'LOGGED IN (uid: ${user.uid})' : 'NOT LOGGED IN'}");
       if (user == null) {
         Navigator.pushNamedAndRemoveUntil(
-            context, '/login_page', (route) => false);
+            context, '/welcome', (route) => false);
       } else {
         Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
       }

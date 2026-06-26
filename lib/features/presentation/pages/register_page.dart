@@ -29,7 +29,20 @@ class _RegisterPageState extends State<RegisterPage> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.darkBlue,
+          ),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.of(context).pop();
+            } else {
+              Navigator.of(context).pushReplacementNamed('/welcome');
+            }
+          },
+        ),
       ),
       body: Stack(
         children: [
