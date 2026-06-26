@@ -15,7 +15,7 @@ class WelcomePage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         alignment: Alignment.center,
         decoration: const BoxDecoration(
-          color: Color(0xffF3F9FB),
+          color: AppColors.softBlue,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -38,7 +38,7 @@ class WelcomePage extends StatelessWidget {
             Text(
               'Membantu dokter gigi dalam melakukan pemeriksaan dan pecatatan secara otomatis terhadap pengalaman gigi karies pada pasien',
               style: GoogleFonts.poppins(
-                  color: const Color(0xffA0A0A0),
+                  color: const Color.fromARGB(255, 0, 0, 0),
                   fontSize: 12,
                   fontWeight: FontWeight.w400),
               textAlign: TextAlign.center,

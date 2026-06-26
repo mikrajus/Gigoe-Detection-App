@@ -358,7 +358,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         if (context.mounted) {
                                           Navigator.pushNamedAndRemoveUntil(
                                               context,
-                                              '/login_page',
+                                              '/welcome',
                                               (route) => false);
                                         }
                                       },
