@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:gigoe_detection_app/core/utils/app_colors.dart';
 import 'package:gigoe_detection_app/features/presentation/pages/add_patient_page.dart';
 import 'package:gigoe_detection_app/features/presentation/pages/guide_page.dart';
@@ -19,6 +21,8 @@ class BottomNavBar extends StatefulWidget {
 
 class _BottomNavBar extends State<BottomNavBar> {
   var currentIndex = 0;
+  bool _isOffline = false;
+  StreamSubscription? _connectivitySubscription;
 
   final List<Widget> _pages = [
     const HomePage(),
@@ -27,6 +31,34 @@ class _BottomNavBar extends State<BottomNavBar> {
     const HistoryPage(),
     const UserProfilePage(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _checkInitialConnectivity();
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> results) {
+      if (mounted) {
+        setState(() {
+          _isOffline = results.contains(ConnectivityResult.none) || results.isEmpty;
+        });
+      }
+    });
+  }
+
+  Future<void> _checkInitialConnectivity() async {
+    final results = await Connectivity().checkConnectivity();
+    if (mounted) {
+      setState(() {
+        _isOffline = results.contains(ConnectivityResult.none) || results.isEmpty;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +132,48 @@ class _BottomNavBar extends State<BottomNavBar> {
         children: [
           _pages[currentIndex],
           buildButtonBar(),
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeOutBack,
+            top: _isOffline ? 0.0 : -100.0,
+            right: 20.0,
+            child: IgnorePointer(
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 15.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 6,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 14),
+                        const SizedBox(width: 6),
+                        Text(
+                          "Offline",
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

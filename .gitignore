@@ -42,3 +42,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Documents
+PANDUAN_AI_SKRIPSI.md
+BAB4_HASIL_DAN_PEMBAHASAN.md

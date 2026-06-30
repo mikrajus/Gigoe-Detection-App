@@ -52,13 +52,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         forceMaterialTransparency: true,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.primaryBlue),
-        ),
         elevation: 0,
         toolbarHeight: 80,
         title: Text(
