@@ -338,9 +338,11 @@ class _AddPatientState extends State<AddPatient> {
                           isLastStep
                               ? (_shouldScan ? 'Simpan & Mulai Pemindaian' : 'Simpan & Selesai')
                               : 'Selanjutnya',
+                          textAlign: TextAlign.center,
                           style: GoogleFonts.poppins(
                             color: Colors.white,
-                            fontSize: 14,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -429,90 +431,97 @@ class _AddPatientState extends State<AddPatient> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _shouldScan = true;
-                              });
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-                              decoration: BoxDecoration(
-                                color: _shouldScan ? AppColors.primaryBlue.withValues(alpha: 0.1) : Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: _shouldScan ? AppColors.primaryBlue : Colors.grey.shade300,
-                                  width: 2,
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _shouldScan = true;
+                                });
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+                                decoration: BoxDecoration(
+                                  color: _shouldScan ? AppColors.primaryBlue.withValues(alpha: 0.1) : Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: _shouldScan ? AppColors.primaryBlue : Colors.grey.shade300,
+                                    width: 2,
+                                  ),
                                 ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.photo_camera_rounded,
-                                    color: _shouldScan ? AppColors.primaryBlue : Colors.grey,
-                                    size: 32,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    "Ya, Pindai Sekarang",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: _shouldScan ? AppColors.primaryBlue : Colors.grey.shade700,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.photo_camera_rounded,
+                                      color: _shouldScan ? AppColors.primaryBlue : Colors.grey,
+                                      size: 24,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      "Ya, Pindai Sekarang",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: _shouldScan ? AppColors.primaryBlue : Colors.grey.shade700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 15),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _shouldScan = false;
-                              });
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-                              decoration: BoxDecoration(
-                                color: !_shouldScan ? AppColors.primaryBlue.withValues(alpha: 0.1) : Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: !_shouldScan ? AppColors.primaryBlue : Colors.grey.shade300,
-                                  width: 2,
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _shouldScan = false;
+                                });
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+                                decoration: BoxDecoration(
+                                  color: !_shouldScan ? AppColors.primaryBlue.withValues(alpha: 0.1) : Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: !_shouldScan ? AppColors.primaryBlue : Colors.grey.shade300,
+                                    width: 2,
+                                  ),
                                 ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.check_circle_outline_rounded,
-                                    color: !_shouldScan ? AppColors.primaryBlue : Colors.grey,
-                                    size: 32,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    "Tidak, Simpan Saja",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: !_shouldScan ? AppColors.primaryBlue : Colors.grey.shade700,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle_outline_rounded,
+                                      color: !_shouldScan ? AppColors.primaryBlue : Colors.grey,
+                                      size: 24,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      "Tidak, Simpan Saja",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: !_shouldScan ? AppColors.primaryBlue : Colors.grey.shade700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),

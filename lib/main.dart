@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'features/presentation/bloc/classification_bloc.dart';
 import 'features/presentation/widgets/bottom_nav_bar.dart';
 import 'features/presentation/bloc/img_response_bloc.dart';
@@ -61,6 +62,15 @@ void main() async {
 //   runApp(const MyApp());
 // }
 
+class AppScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.trackpad,
+      };
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -79,6 +89,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        scrollBehavior: AppScrollBehavior(),
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,

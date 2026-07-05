@@ -109,8 +109,13 @@ class _AddPhotoState extends State<AddPhoto> {
           Expanded(
             child: PageView.builder(
               controller: _pageController,
-              physics: const NeverScrollableScrollPhysics(),
               itemCount: _pageTitles.length,
+              physics: const BouncingScrollPhysics(),
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
               itemBuilder: (context, index) {
                 final title = _pageTitles[index];
                 return Padding(
@@ -139,61 +144,61 @@ class _AddPhotoState extends State<AddPhoto> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppColors.subtleShadow,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                subtitle,
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              color: AppColors.primaryBlue,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            subtitle,
+            style: GoogleFonts.poppins(
+              color: Colors.grey,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 20),
           Expanded(
             child: Container(
-              width: double.maxFinite,
+              width: double.infinity,
               decoration: BoxDecoration(
-                color: imageFile != null ? Colors.transparent : Colors.black12,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.grey[200],
               ),
               child: imageFile != null
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                       child: Image.file(
                         File(imageFile),
-                        fit: BoxFit.contain,
+                        fit: BoxFit.cover,
                       ),
                     )
-                  : const Column(
+                  : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_photo_alternate_rounded, size: 60, color: Colors.grey),
-                        SizedBox(height: 10),
+                        Icon(
+                          Icons.image_rounded,
+                          size: 100,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 10),
                         Text(
-                          "Belum ada foto",
-                          style: TextStyle(color: Colors.grey, fontSize: 16),
-                        )
+                          "Pilih Foto Gigi Anda",
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
             ),
@@ -284,9 +289,6 @@ class _AddPhotoState extends State<AddPhoto> {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                   );
-                  setState(() {
-                    _currentPage--;
-                  });
                 },
                 child: Text(
                   "Kembali",
@@ -319,9 +321,6 @@ class _AddPhotoState extends State<AddPhoto> {
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
                       );
-                      setState(() {
-                        _currentPage++;
-                      });
                     },
                     child: Text(
                       "Selanjutnya",
