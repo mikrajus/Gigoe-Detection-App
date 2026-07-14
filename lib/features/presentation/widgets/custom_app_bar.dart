@@ -70,7 +70,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       //                         fontWeight: FontWeight.w400),
       //                     children: [
       //                       TextSpan(
-      //                         text: 'Subhan Janura',
+      //                         text: 'Nama Pengguna',
       //                         style: GoogleFonts.poppins(
       //                             color: const Color(0xffffffff),
       //                             fontSize: 16,

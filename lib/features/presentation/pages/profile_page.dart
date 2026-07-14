@@ -84,7 +84,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Subhan Janura",
+                          "Nama Pengguna",
                           style: GoogleFonts.poppins(
                             color: Colors.black,
                             fontSize: 20,
